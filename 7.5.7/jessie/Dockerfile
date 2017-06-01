@@ -1,7 +1,7 @@
 FROM debian:jessie
 LABEL maintainer "Dave Curylo <dave@curylo.org>, Michael Hendricks <michael@ndrix.org>"
-RUN SWIPL_VER=7.5.6 && \
-    SWIPL_CHECKSUM=47c31d4d3140e96706295555b01916dd7bde6c4151c80515a48e7aabfc747288 && \
+RUN SWIPL_VER=7.5.7 && \
+    SWIPL_CHECKSUM=648d15a534a3503ef281cc7c2ead7ee913866c3d7cb1d1344508ee24b96b4512 && \
     apt-get update && \
     apt-get dist-upgrade -y && \
     apt-get install -y build-essential curl libarchive13 libarchive-dev libgmp-dev libossp-uuid-dev libpcre3-dev libreadline-dev libedit-dev libssl-dev zlib1g-dev libdb-dev libgeos++-dev libspatialindex-dev unixodbc-dev && \

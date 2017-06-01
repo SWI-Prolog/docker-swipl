@@ -1,7 +1,7 @@
 FROM alpine
 LABEL maintainer "Dave Curylo <dave@curylo.org>, Michael Hendricks <michael@ndrix.org>"
-RUN SWIPL_VER=7.5.6 && \
-    SWIPL_CHECKSUM=47c31d4d3140e96706295555b01916dd7bde6c4151c80515a48e7aabfc747288 \
+RUN SWIPL_VER=7.5.7 && \
+    SWIPL_CHECKSUM=648d15a534a3503ef281cc7c2ead7ee913866c3d7cb1d1344508ee24b96b4512 \
     && apk --update add --no-cache curl libarchive readline pcre gmp libressl libedit zlib db unixodbc libuuid \
     && apk --update add --no-cache --virtual build-dependencies bash alpine-sdk autoconf libarchive-dev gmp-dev pcre-dev readline-dev libedit-dev libressl-dev zlib-dev db-dev unixodbc-dev util-linux-dev linux-headers \
     && apk add geos-dev --update-cache --virtual build-dependencies --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted \
