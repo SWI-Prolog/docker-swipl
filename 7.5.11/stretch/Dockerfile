@@ -18,7 +18,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 RUN SWIPL_VER=7.5.11 && \
     SWIPL_CHECKSUM=ab8a21ef88e410fc8dfb421bcba7884687fdf08ed85c191e51d806aa831d95e9 && \
-    BUILD_DEPS='make gcc wget libarchive13 libarchive-dev libgmp-dev libossp-uuid-dev libpcre3-dev libreadline-dev libedit-dev libssl-dev zlib1g-dev libdb-dev libgeos-dev libspatialindex-dev unixodbc-dev' && \
+    BUILD_DEPS='make gcc wget libarchive-dev libgmp-dev libossp-uuid-dev libpcre3-dev libreadline-dev libedit-dev libssl-dev zlib1g-dev libdb-dev libgeos-dev libspatialindex-dev unixodbc-dev' && \
     apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS && \
     mkdir /tmp/src && \
     cd /tmp/src && \
