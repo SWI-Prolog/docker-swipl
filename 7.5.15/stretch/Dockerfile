@@ -34,4 +34,5 @@ RUN SWIPL_VER=7.5.15 && \
     chmod u+x build && ./build && \
     apt-get purge -y --auto-remove $BUILD_DEPS && \
     cd /usr/bin && rm -rf /tmp/src && ln -s /swipl/bin/swipl swipl && rm -rf /var/lib/apt/lists/*
+ENV LANG C.UTF-8
 CMD ["swipl"]
