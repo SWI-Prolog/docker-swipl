@@ -7,6 +7,7 @@ RUN apt-get update && \
     libgmp10 \
     libossp-uuid16 \
     libssl1.1 \
+    ca-certificates \
     libdb5.3 \
     libpcre3 \
     libedit2 \
@@ -22,7 +23,7 @@ ENV SWIPL_VER 7.7.1
 ENV SWIPL_CHECKSUM fda2c8b6b606ff199ea8a6f019008aa8272b7c349cb9312ccd5944153509503a
 ENV BUILD_DEPS make gcc g++ wget libarchive-dev libgmp-dev libossp-uuid-dev libpcre3-dev \
 	       libreadline-dev libedit-dev libssl-dev zlib1g-dev libdb-dev libgeos++-dev \
-	       libspatialindex-dev unixodbc-dev git ca-certificates autoconf
+	       libspatialindex-dev unixodbc-dev git autoconf
 
 ENV SPACE_SHA1 cd6fefa63317a7a6effb61a1c5aee634ebe2ca05
 
