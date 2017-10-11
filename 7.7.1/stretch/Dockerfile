@@ -6,15 +6,11 @@ RUN apt-get update && \
     libarchive13 \
     libgmp10 \
     libossp-uuid16 \
-    libssl1.1 \
-    ca-certificates \
+    libssl1.1 ca-certificates \
     libdb5.3 \
     libpcre3 \
     libedit2 \
-    unixodbc \
-    odbc-postgresql \
-    tdsodbc \
-    libmariadbclient18 \
+    unixodbc odbc-postgresql tdsodbc libmariadbclient18 \
     libgeos-c1v5 libspatialindex4v5 \
     libsqlite3-0 \
     librocksdb4.5 \
