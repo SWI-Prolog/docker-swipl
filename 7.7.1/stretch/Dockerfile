@@ -11,25 +11,37 @@ RUN apt-get update && \
     libdb5.3 \
     libpcre3 \
     libedit2 \
-    libgeos-c1v5 \
-    libspatialindex4v5 \
     unixodbc \
     odbc-postgresql \
     tdsodbc \
-    libmariadbclient18 && \
+    libmariadbclient18 \
+    libgeos-c1v5 libspatialindex4v5 \
+    libsqlite3-0 \
+    librocksdb4.5 \
+    libserd-0-0 libraptor2-0 && \
     rm -rf /var/lib/apt/lists/*
 
 FROM base as build
 
-ENV SWIPL_VER 7.7.1
-ENV SWIPL_CHECKSUM fda2c8b6b606ff199ea8a6f019008aa8272b7c349cb9312ccd5944153509503a
-ENV BUILD_DEPS make gcc g++ wget libarchive-dev libgmp-dev libossp-uuid-dev libpcre3-dev \
-	       libreadline-dev libedit-dev libssl-dev zlib1g-dev libdb-dev libgeos++-dev \
-	       libspatialindex-dev unixodbc-dev git autoconf
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    make gcc g++ wget git autoconf \
+    libarchive-dev libgmp-dev libossp-uuid-dev libpcre3-dev \
+    libreadline-dev libedit-dev libssl-dev zlib1g-dev libdb-dev \
+    unixodbc-dev \
+    libgeos++-dev libspatialindex-dev \
+    libsqlite3-dev \
+    librocksdb-dev \
+    libserd-dev libraptor2-dev
 
-ENV SPACE_SHA1 cd6fefa63317a7a6effb61a1c5aee634ebe2ca05
+ENV SWIPL_VER=7.7.1 \
+    SWIPL_CHECKSUM=fda2c8b6b606ff199ea8a6f019008aa8272b7c349cb9312ccd5944153509503a \
+    SPACE_SHA1=cd6fefa63317a7a6effb61a1c5aee634ebe2ca05 \
+    PROSQLITE_SHA1=a1d915d07933ece27ea5fd68f07c83d10583e7a0 \
+    ROCKSDB_SHA1=29eaee6fcdb6dce690ed187ef68b80ee94739412 \
+    HDT_SHA1=e0a0eff87fc3318434cb493690c570e1255ed30e \
+    RSERVE_CLIENT_SHA1=72838bbfa3976a83d19fb38bdae04378e30f4b0d
 
-RUN apt-get update && apt-get install -y --no-install-recommends ${BUILD_DEPS}
 RUN mkdir /tmp/src && \
     cd /tmp/src && \
     wget http://www.swi-prolog.org/download/devel/src/swipl-${SWIPL_VER}.tar.gz && \
@@ -53,28 +65,31 @@ RUN mkdir /swipl/lib/swipl/pack && \
     (cd space && ln -s configure.ac configure.in) && \
     swipl -g 'pack_rebuild(space)' -t halt
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libsqlite3-dev librocksdb-dev
-
 RUN cd /swipl/lib/swipl/pack && \
     git clone https://github.com/nicos-angelopoulos/prosqlite.git && \
-    (cd prosqlite && git checkout -q a1d915d07933ece27ea5fd68f07c83d10583e7a0) && \
+    (cd prosqlite && git checkout -q ${PROSQLITE_SHA1}) && \
     rm -rf prosqlite/lib prosqlite/.git && \
     swipl -g 'pack_rebuild(prosqlite)' -t halt
 
 RUN cd /swipl/lib/swipl/pack && \
     git clone https://github.com/JanWielemaker/rocksdb.git && \
-    (cd rocksdb && git checkout -q 29eaee6fcdb6dce690ed187ef68b80ee94739412) && \
+    (cd rocksdb && git checkout -q ${ROCKSDB_SHA1}) && \
     rm -rf rocksdb/.git && \
     swipl -g 'pack_rebuild(rocksdb)' -t halt
 
-FROM base
+RUN cd /swipl/lib/swipl/pack && \
+    git clone https://github.com/JanWielemaker/hdt.git && \
+    (cd hdt && git checkout -q ${HDT_SHA1}) && \
+    swipl -g 'pack_rebuild(hdt)' -t halt && \
+    rm -rf hdt/hdt-cpp hdt/.git hdt/c/*.o
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    libsqlite3-0 \
-    librocksdb4.5 && \
-    rm -rf /var/lib/apt/lists/*
+RUN cd /swipl/lib/swipl/pack && \
+    git clone https://github.com/JanWielemaker/rserve_client.git && \
+    (cd rserve_client && git checkout -q ${RSERVE_CLIENT_SHA1}) && \
+    swipl -g 'pack_rebuild(rserve_client)' -t halt && \
+    rm -rf rserve_client/Rserve rserve_client/.git rserve_client/cc/*.o
+
+FROM base
 
 COPY --from=build /swipl /swipl
 RUN cd /usr/bin && ln -s /swipl/bin/swipl* .
