@@ -49,10 +49,32 @@ RUN mkdir /swipl/lib/swipl/pack && \
     cd /swipl/lib/swipl/pack && \
     git clone https://github.com/JanWielemaker/space.git && \
     (cd space && git checkout -q ${SPACE_SHA1}) && \
+    rm -rf space/.git && \
     (cd space && ln -s configure.ac configure.in) && \
     swipl -g 'pack_rebuild(space)' -t halt
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libsqlite3-dev librocksdb-dev
+
+RUN cd /swipl/lib/swipl/pack && \
+    git clone https://github.com/nicos-angelopoulos/prosqlite.git && \
+    (cd prosqlite && git checkout -q a1d915d07933ece27ea5fd68f07c83d10583e7a0) && \
+    rm -rf prosqlite/lib prosqlite/.git && \
+    swipl -g 'pack_rebuild(prosqlite)' -t halt
+
+RUN cd /swipl/lib/swipl/pack && \
+    git clone https://github.com/JanWielemaker/rocksdb.git && \
+    (cd rocksdb && git checkout -q 29eaee6fcdb6dce690ed187ef68b80ee94739412) && \
+    rm -rf rocksdb/.git && \
+    swipl -g 'pack_rebuild(rocksdb)' -t halt
+
 FROM base
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    libsqlite3-0 \
+    librocksdb4.5 && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /swipl /swipl
 RUN cd /usr/bin && ln -s /swipl/bin/swipl* .
