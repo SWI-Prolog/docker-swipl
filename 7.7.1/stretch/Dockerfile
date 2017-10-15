@@ -40,7 +40,7 @@ RUN SWIPL_VER=7.7.1 \
     cp build.templ build && \
     sed -i '/PREFIX=$HOME/c\PREFIX=/swipl' build && \
     sed -i '/# export DISABLE_PKGS/c\export DISABLE_PKGS="jpl xpce"' build && \
-    sed -i 's/# *\(.*--disable-libdirversion\)/\1/' build && \
+    sed -i 's/# *\(EXTRA.*--disable-libdirversion\)/\1/' build && \
     chmod u+x build && ./build && \
     cd /usr/bin && rm -rf /tmp/src && ln -s /swipl/bin/swipl swipl && \
     # space addin
