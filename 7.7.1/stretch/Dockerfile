@@ -21,72 +21,42 @@ RUN apt-get update && \
     libserd-0-0 \
     libraptor2-0 && \
     rm -rf /var/lib/apt/lists/*
-RUN SWIPL_VER=7.7.1 \
-    SWIPL_CHECKSUM=fda2c8b6b606ff199ea8a6f019008aa8272b7c349cb9312ccd5944153509503a \
-    SPACE_SHA1=cd6fefa63317a7a6effb61a1c5aee634ebe2ca05 \
-    PROSQLITE_SHA1=a1d915d07933ece27ea5fd68f07c83d10583e7a0 \
-    ROCKSDB_SHA1=29eaee6fcdb6dce690ed187ef68b80ee94739412 \
-    HDT_SHA1=e0a0eff87fc3318434cb493690c570e1255ed30e \
-    RSERVE_CLIENT_SHA1=72838bbfa3976a83d19fb38bdae04378e30f4b0d && \
-    BUILD_DEPS='make gcc g++ wget git autoconf libarchive-dev libgmp-dev libossp-uuid-dev libpcre3-dev libreadline-dev libedit-dev libssl-dev zlib1g-dev libdb-dev unixodbc-dev libsqlite3-dev librocksdb-dev libserd-dev libraptor2-dev libgeos++-dev libspatialindex-dev' && \
-    apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS && \
-    mkdir /tmp/src && \
-    cd /tmp/src && \
-    wget http://www.swi-prolog.org/download/devel/src/swipl-$SWIPL_VER.tar.gz && \
-    echo "$SWIPL_CHECKSUM  swipl-$SWIPL_VER.tar.gz" >> swipl-$SWIPL_VER.tar.gz-CHECKSUM && \
-    sha256sum -c swipl-$SWIPL_VER.tar.gz-CHECKSUM && \
-    tar -xzf swipl-$SWIPL_VER.tar.gz && \
-    cd swipl-$SWIPL_VER && \
-    cp build.templ build && \
-    sed -i '/PREFIX=$HOME/c\PREFIX=/swipl' build && \
-    sed -i '/# export DISABLE_PKGS/c\export DISABLE_PKGS="jpl xpce"' build && \
-    sed -i 's/# *\(EXTRA.*--disable-libdirversion\)/\1/' build && \
-    chmod u+x build && ./build && \
-    cd /usr/bin && rm -rf /tmp/src && ln -s /swipl/bin/swipl swipl && \
-    # space addin
-    mkdir -p /swipl/lib/swipl/pack && \
-    cd /swipl/lib/swipl/pack && \
-    git clone https://github.com/JanWielemaker/space.git && \
-    (cd space && git checkout -q ${SPACE_SHA1}) && \
-    rm -rf space/.git && \
-    (cd space && ln -s configure.ac configure.in) && \
-    swipl -g 'pack_rebuild(space)' -t halt && \
-    cd space && \
-    find -maxdepth 1 ! -name . ! -name lib ! -name prolog ! -name pack.pl -exec rm -rf {} \; && \
-    # prosqlite addin
-    cd /swipl/lib/swipl/pack && \
-    git clone https://github.com/nicos-angelopoulos/prosqlite.git && \
-    (cd prosqlite && git checkout -q ${PROSQLITE_SHA1}) && \
-    rm -rf prosqlite/lib prosqlite/.git && \
-    swipl -g 'pack_rebuild(prosqlite)' -t halt && \
-    cd prosqlite && \
-    find -maxdepth 1 ! -name . ! -name lib ! -name prolog ! -name pack.pl -exec rm -rf {} \; && \
-    # rocksdb addin
-    cd /swipl/lib/swipl/pack && \
-    git clone https://github.com/JanWielemaker/rocksdb.git && \
-    (cd rocksdb && git checkout -q ${ROCKSDB_SHA1}) && \
-    rm -rf rocksdb/.git && \
-    swipl -g 'pack_rebuild(rocksdb)' -t halt && \
-    cd rocksdb && \
-    find -maxdepth 1 ! -name . ! -name lib ! -name prolog ! -name pack.pl -exec rm -rf {} \; && \
-    # hdt addin
-    cd /swipl/lib/swipl/pack && \
-    git clone https://github.com/JanWielemaker/hdt.git && \
-    (cd hdt && git checkout -q ${HDT_SHA1}) && \
-    swipl -g 'pack_rebuild(hdt)' -t halt && \
-    cd hdt && \
-    find -maxdepth 1 ! -name . ! -name lib ! -name prolog ! -name pack.pl -exec rm -rf {} \; && \
-    # rserve addin
-    cd /swipl/lib/swipl/pack && \
-    git clone https://github.com/JanWielemaker/rserve_client.git && \
-    (cd rserve_client && git checkout -q ${RSERVE_CLIENT_SHA1}) && \
-    swipl -g 'pack_rebuild(rserve_client)' -t halt && \
-    cd rserve_client && \
-    find -maxdepth 1 ! -name . ! -name lib ! -name prolog ! -name pack.pl -exec rm -rf {} \; && \
-    # finally clean up apt
-    rm -rf /var/lib/apt/lists/* && \
-    apt-get purge -y --auto-remove $BUILD_DEPS && \
-    rm /usr/bin/swipl && cd /usr/bin && ln -s /swipl/bin/swipl* .
-
+RUN set -eux; \
+    SWIPL_VER=7.7.1; \
+    SWIPL_CHECKSUM=fda2c8b6b606ff199ea8a6f019008aa8272b7c349cb9312ccd5944153509503a; \
+    BUILD_DEPS='make gcc g++ wget git autoconf libarchive-dev libgmp-dev libossp-uuid-dev libpcre3-dev libreadline-dev libedit-dev libssl-dev zlib1g-dev libdb-dev unixodbc-dev libsqlite3-dev librocksdb-dev libserd-dev libraptor2-dev libgeos++-dev libspatialindex-dev'; \
+    apt-get update; apt-get install -y --no-install-recommends $BUILD_DEPS; rm -rf /var/lib/apt/lists/*; \
+    mkdir /tmp/src; \
+    cd /tmp/src; \
+    wget http://www.swi-prolog.org/download/devel/src/swipl-$SWIPL_VER.tar.gz; \
+    echo "$SWIPL_CHECKSUM  swipl-$SWIPL_VER.tar.gz" >> swipl-$SWIPL_VER.tar.gz-CHECKSUM; \
+    sha256sum -c swipl-$SWIPL_VER.tar.gz-CHECKSUM; \
+    tar -xzf swipl-$SWIPL_VER.tar.gz; \
+    cd swipl-$SWIPL_VER; \
+    sed -e '/PREFIX=$HOME/c\PREFIX=/usr' \
+        -e '/# export DISABLE_PKGS/c\export DISABLE_PKGS="jpl xpce"' \
+        -e 's/# *\(EXTRA.*--disable-libdirversion\)/\1/' \
+           build.templ > build; \
+    chmod u+x build; ./build; \
+    mkdir -p /usr/lib/swipl/pack; \
+    cd /usr/lib/swipl/pack; \
+    rm -rf /tmp/src; \
+    # usage: install_addin addin-name git-url git-commit
+    install_addin () { \
+        git clone "$2" "$1"; \
+        git -C "$1" checkout -q "$3"; \
+        if [ "$1" = 'space' ]; then (cd "$1"; ln -s configure.ac configure.in); fi; \
+        # the prosqlite plugin lib directory must be removed?
+        if [ "$1" = 'prosqlite' ]; then rm -rf "$1/lib"; fi; \
+        swipl -g "pack_rebuild($1)" -t halt; \
+        find "$1" -mindepth 1 -maxdepth 1 ! -name lib ! -name prolog ! -name pack.pl -exec rm -rf {} +; \
+        find "$1" -name .git -exec rm -rf {} +; \
+    }; \
+    install_addin space https://github.com/JanWielemaker/space.git cd6fefa63317a7a6effb61a1c5aee634ebe2ca05; \
+    install_addin prosqlite https://github.com/nicos-angelopoulos/prosqlite.git a1d915d07933ece27ea5fd68f07c83d10583e7a0; \
+    install_addin rocksdb https://github.com/JanWielemaker/rocksdb.git 29eaee6fcdb6dce690ed187ef68b80ee94739412; \
+    install_addin hdt https://github.com/JanWielemaker/hdt.git e0a0eff87fc3318434cb493690c570e1255ed30e; \
+    install_addin rserve_client https://github.com/JanWielemaker/rserve_client.git 72838bbfa3976a83d19fb38bdae04378e30f4b0d; \
+    apt-get purge -y --auto-remove $BUILD_DEPS
 ENV LANG C.UTF-8
 CMD ["swipl"]
