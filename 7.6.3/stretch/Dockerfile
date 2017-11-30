@@ -28,7 +28,7 @@ RUN set -eux; \
     apt-get update; apt-get install -y --no-install-recommends $BUILD_DEPS; rm -rf /var/lib/apt/lists/*; \
     mkdir /tmp/src; \
     cd /tmp/src; \
-    wget http://www.swi-prolog.org/download/devel/src/swipl-$SWIPL_VER.tar.gz; \
+    wget http://www.swi-prolog.org/download/stable/src/swipl-$SWIPL_VER.tar.gz; \
     echo "$SWIPL_CHECKSUM  swipl-$SWIPL_VER.tar.gz" >> swipl-$SWIPL_VER.tar.gz-CHECKSUM; \
     sha256sum -c swipl-$SWIPL_VER.tar.gz-CHECKSUM; \
     tar -xzf swipl-$SWIPL_VER.tar.gz; \
