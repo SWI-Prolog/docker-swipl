@@ -14,6 +14,11 @@ test:-
         cpu("armv8l")
         -> format("Loading modules for ~w~n", [arm32v7])
         , multiarch
+        , writeln("Loaded modules successfully.");
+
+        cpu("aarch64")
+        -> format("Loading modules for ~w~n", [arm64v8])
+        , multiarch
         , writeln("Loaded modules successfully.")
     )
     , halt.
