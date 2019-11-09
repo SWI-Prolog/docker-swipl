@@ -24,7 +24,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 RUN set -eux; \
     SWIPL_VER=8.1.15; \
-    SWIPL_CHECKSUM=0d02ffa22f8400da6cfcee8c173ef76764b79faff34a00953bca19476d3d7cb2; \
+    SWIPL_CHECKSUM=b318ade25fe3fe118a1b9d8e524e0fe69cb41f90ca68bc1c5d077f655ed35ac8; \
     BUILD_DEPS='make cmake gcc g++ wget git autoconf libarchive-dev libgmp-dev libossp-uuid-dev libpcre3-dev libreadline-dev libedit-dev libssl-dev zlib1g-dev libdb-dev unixodbc-dev libsqlite3-dev libserd-dev libraptor2-dev libgeos++-dev libspatialindex-dev'; \
     dpkgArch="$(dpkg --print-architecture)"; \
     [ "$dpkgArch" = 'armhf' ] || [ "$dpkgArch" = 'armel' ] || BUILD_DEPS="$BUILD_DEPS librocksdb-dev"; \
