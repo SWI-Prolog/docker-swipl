@@ -31,7 +31,7 @@ RUN set -eux; \
     apt-get update; apt-get install -y --no-install-recommends $BUILD_DEPS; rm -rf /var/lib/apt/lists/*; \
     mkdir /tmp/src; \
     cd /tmp/src; \
-    wget http://www.swi-prolog.org/download/devel/src/swipl-$SWIPL_VER.tar.gz; \
+    wget -q https://www.swi-prolog.org/download/devel/src/swipl-$SWIPL_VER.tar.gz; \
     echo "$SWIPL_CHECKSUM  swipl-$SWIPL_VER.tar.gz" >> swipl-$SWIPL_VER.tar.gz-CHECKSUM; \
     sha256sum -c swipl-$SWIPL_VER.tar.gz-CHECKSUM; \
     tar -xzf swipl-$SWIPL_VER.tar.gz; \
@@ -46,8 +46,8 @@ RUN set -eux; \
     LANG=C.UTF8 make; \
     LANG=C.UTF8 make install; \
     rm -rf /tmp/src; \
-    mkdir -p /usr/lib/swipl/pack; \
-    cd /usr/lib/swipl/pack; \
+    mkdir -p /usr/share/swi-prolog/pack; \
+    cd /usr/share/swi-prolog/pack; \
     # usage: install_addin addin-name git-url git-commit
     install_addin () { \
         git clone "$2" "$1"; \
