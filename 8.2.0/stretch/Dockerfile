@@ -57,6 +57,7 @@ RUN set -eux; \
         swipl -g "pack_rebuild($1)" -t halt; \
         find "$1" -mindepth 1 -maxdepth 1 ! -name lib ! -name prolog ! -name pack.pl -exec rm -rf {} +; \
         find "$1" -name .git -exec rm -rf {} +; \
+        find "$1" -name '*.so' -exec strip {} +; \
     }; \
     dpkgArch="$(dpkg --print-architecture)"; \
     install_addin space https://github.com/JanWielemaker/space.git cd6fefa63317a7a6effb61a1c5aee634ebe2ca05; \
