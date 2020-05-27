@@ -26,7 +26,7 @@ RUN apt-get update && \
 RUN set -eux; \
     SWIPL_VER=8.2.0; \
     SWIPL_CHECKSUM=d8c9f3adb9cd997a5fed7b5f5dbfe971d2defda969b9066ada158e4202c09c3c; \
-    BUILD_DEPS='make cmake gcc g++ wget git autoconf libarchive-dev libgmp-dev libossp-uuid-dev libpcre3-dev libreadline-dev libedit-dev libssl-dev zlib1g-dev libdb-dev unixodbc-dev libsqlite3-dev libserd-dev libraptor2-dev libgeos++-dev libspatialindex-dev libgoogle-perftools-dev'; \
+    BUILD_DEPS='make cmake ninja-build gcc g++ wget git autoconf libarchive-dev libgmp-dev libossp-uuid-dev libpcre3-dev libreadline-dev libedit-dev libssl-dev zlib1g-dev libdb-dev unixodbc-dev libsqlite3-dev libserd-dev libraptor2-dev libgeos++-dev libspatialindex-dev libgoogle-perftools-dev'; \
     dpkgArch="$(dpkg --print-architecture)"; \
     apt-get update; apt-get install -y --no-install-recommends $BUILD_DEPS; rm -rf /var/lib/apt/lists/*; \
     mkdir /tmp/src; \
@@ -41,10 +41,11 @@ RUN set -eux; \
           -DSWIPL_PACKAGES_X=OFF \
 	  -DSWIPL_PACKAGES_JAVA=OFF \
 	  -DCMAKE_INSTALL_PREFIX=/usr \
+	  -G Ninja \
           ..; \
-    # LANG=C.UTF8 is a work-around for a 7.7.22 bug
-    LANG=C.UTF8 make; \
-    LANG=C.UTF8 make install; \
+    LANG=C.UTF8 ../scripts/pgo-compile.sh; \
+    LANG=C.UTF8 ninja; \
+    LANG=C.UTF8 ninja install; \
     rm -rf /tmp/src; \
     mkdir -p /usr/share/swi-prolog/pack; \
     cd /usr/share/swi-prolog/pack; \
