@@ -23,6 +23,7 @@ RUN apt-get update && \
     libraptor2-0 && \
     dpkgArch="$(dpkg --print-architecture)" && \
     rm -rf /var/lib/apt/lists/*
+ENV LANG C.UTF-8
 RUN set -eux; \
     SWIPL_VER=8.2.0; \
     SWIPL_CHECKSUM=d8c9f3adb9cd997a5fed7b5f5dbfe971d2defda969b9066ada158e4202c09c3c; \
@@ -43,9 +44,9 @@ RUN set -eux; \
 	  -DCMAKE_INSTALL_PREFIX=/usr \
 	  -G Ninja \
           ..; \
-    LANG=C.UTF8 ../scripts/pgo-compile.sh; \
-    LANG=C.UTF8 ninja; \
-    LANG=C.UTF8 ninja install; \
+    ../scripts/pgo-compile.sh; \
+    ninja; \
+    ninja install; \
     rm -rf /tmp/src; \
     mkdir -p /usr/share/swi-prolog/pack; \
     cd /usr/share/swi-prolog/pack; \
@@ -67,5 +68,4 @@ RUN set -eux; \
     [ "$dpkgArch" = 'armhf' ] || [ "$dpkgArch" = 'armel' ] ||  install_addin hdt https://github.com/JanWielemaker/hdt.git e0a0eff87fc3318434cb493690c570e1255ed30e; \
     install_addin rserve_client https://github.com/JanWielemaker/rserve_client.git 2af6c08fb1b59709dbc48b44f339b06f1217b4a5; \
     apt-get purge -y --auto-remove $BUILD_DEPS
-ENV LANG C.UTF-8
 CMD ["swipl"]
