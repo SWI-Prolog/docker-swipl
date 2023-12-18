@@ -1,3 +1,5 @@
 #!/bin/sh
 
-docker run -v `pwd`/test.pl:/src/test.pl --rm -it --entrypoint=swipl swipl -q -f /src/test.pl -g test;
+img=${IMG:-swipl}
+
+docker run -v `pwd`/test.pl:/src/test.pl --rm -it --entrypoint=swipl $img --on-error=status /src/test.pl
