@@ -97,7 +97,7 @@ for base in bookworm bullseye; do
   sed -i -e "s/$from/$VERSION/" \
          -e "s/SWIPL_CHECKSUM=[a-f0-9]*/SWIPL_CHECKSUM=$hash/" \
 	 $VERSION/$base/Dockerfile
-  docker pull $base:latest
+  docker pull debian:$base
   (cd $VERSION/$base && \
        docker build -t swipl-$VERSION:$base . 2>&1 > build.log)
   test swipl-$VERSION:$base || exit 1
