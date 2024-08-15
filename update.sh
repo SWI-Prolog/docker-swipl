@@ -33,7 +33,7 @@ test()
 
   echo "### Testing $img"
   got=$(docker run -it --rm $img swipl --version)
-  if echo $got | fgrep -q $VERSION; then
+  if echo $got | grep -qF $VERSION; then
       echo "Found correct version"
   else
       echo "ERROR: Got $got, expected version $VERSION"
@@ -93,7 +93,7 @@ hash=$(curl -s https://www.swi-prolog.org/download/$series/src/swipl-$VERSION.ta
 echo "SHA256=$hash"
 
 dockerfiles=
-for base in bookworm bullseye; do
+for base in bookworm; do
   sed -i -e "s/$from/$VERSION/" \
          -e "s/SWIPL_CHECKSUM=[a-f0-9]*/SWIPL_CHECKSUM=$hash/" \
 	 $VERSION/$base/Dockerfile
