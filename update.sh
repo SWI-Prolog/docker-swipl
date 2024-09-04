@@ -94,7 +94,7 @@ echo "SHA256=$hash"
 
 dockerfiles=
 for base in bookworm; do
-  sed -i -e "s/$from/$VERSION/" \
+  sed -i -e "s/SWIPL_VER=$from/SWIPL_VER=$VERSION/" \
          -e "s/SWIPL_CHECKSUM=[a-f0-9]*/SWIPL_CHECKSUM=$hash/" \
 	 $VERSION/$base/Dockerfile
   docker pull debian:$base
@@ -105,6 +105,6 @@ for base in bookworm; do
 done
 
 if confirm "Commit $dockerfiles?"; then
-    git add $dockerfiles 
+    git add $dockerfiles
     git commit -m "Update to $VERSION $series version"
 fi
