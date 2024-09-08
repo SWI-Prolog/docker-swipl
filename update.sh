@@ -1,6 +1,8 @@
 #!/bin/bash
 
 series=devel
+build=yes
+onlybuild=no
 
 confirm()
 { while true; do
@@ -25,6 +27,8 @@ Usage: $prog [option..]
 Options
   --stable		Create Docker for stable series
   --from=version	Create from base <version>
+  --no-build		Only create updated Dockerfiles
+  --only-build		Build using existing Dockerfiles
 EOF
 }
 
@@ -63,6 +67,14 @@ while [ $done = false ]; do
 	    from=$(echo $1 | sed 's/^--[a-z]*=//')
 	    shift
 	    ;;
+	--no-build)
+	    build=no
+	    shift
+	    ;;
+	--only-build)
+	    onlybuild=yes
+	    shift
+	    ;;
 	--*)
 	    usage
 	    exit 1
@@ -84,24 +96,35 @@ if [ -z "$from" ]; then
     fi
 fi
 
-if ! confirm "Create Dockerfile for $VERSION from $from?"; then
+if [ $onlybuild = no ]; then
+    msg="Create Dockerfile for $VERSION from $from?"
+else
+    msg="Build $VERSION?"
+fi
+if ! confirm "$msg"; then
     exit 1
 fi
 
-cp -r $from $VERSION
-hash=$(curl -s https://www.swi-prolog.org/download/$series/src/swipl-$VERSION.tar.gz.sha256)
-echo "SHA256=$hash"
+if [ $onlybuild = no ]; then
+    cp -r $from $VERSION
+    hash=$(curl -s https://www.swi-prolog.org/download/$series/src/swipl-$VERSION.tar.gz.sha256)
+    echo "SHA256=$hash"
+fi
 
 dockerfiles=
 for base in bookworm; do
-  sed -i -e "s/SWIPL_VER=$from/SWIPL_VER=$VERSION/" \
-         -e "s/SWIPL_CHECKSUM=[a-f0-9]*/SWIPL_CHECKSUM=$hash/" \
-	 $VERSION/$base/Dockerfile
-  docker pull debian:$base
-  (cd $VERSION/$base && \
-       docker build -t swipl-$VERSION:$base . 2>&1 > build.log)
-  test swipl-$VERSION:$base || exit 1
-  dockerfiles+=" $VERSION/$base/Dockerfile"
+    if [ $onlybuild = no ]; then
+	sed -i -e "s/SWIPL_VER=$from/SWIPL_VER=$VERSION/" \
+            -e "s/SWIPL_CHECKSUM=[a-f0-9]*/SWIPL_CHECKSUM=$hash/" \
+	    $VERSION/$base/Dockerfile
+    fi
+    if [ $build = yes ]; then
+	docker pull debian:$base
+	(cd $VERSION/$base && \
+	     docker build -t swipl-$VERSION:$base . 2>&1 | tee build.log)
+      test swipl-$VERSION:$base || exit 1
+    fi
+    dockerfiles+=" $VERSION/$base/Dockerfile"
 done
 
 if confirm "Commit $dockerfiles?"; then
