@@ -52,13 +52,15 @@ RUN set -eux; \
     rm -rf /tmp/src; \
     mkdir -p /usr/share/swi-prolog/pack; \
     cd /usr/share/swi-prolog/pack; \
+    echo ":- multifile prolog:build_environment/2." > env.pl; \
+    echo "prolog:build_environment('PORTABLE', '1')." >> env.pl; \
     # usage: install_addin addin-name git-url git-commit
     install_addin () { \
         git clone "$2" "$1"; \
         git -C "$1" checkout -q "$3"; \
         # the prosqlite plugin lib directory must be removed?
         if [ "$1" = 'prosqlite' ]; then rm -rf "$1/lib"; fi; \
-        swipl -g "pack_rebuild($1)" -t halt; \
+        swipl -g "pack_rebuild($1)" -t halt env.pl; \
         find "$1" -mindepth 1 -maxdepth 1 ! -name lib ! -name prolog ! -name pack.pl -exec rm -rf {} +; \
         find "$1" -name .git -exec rm -rf {} +; \
         find "$1" -name '*.so' -exec strip {} +; \
