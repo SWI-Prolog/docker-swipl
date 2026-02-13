@@ -90,9 +90,9 @@ VERSION=$(curl -s https://www.swi-prolog.org/download/$series/src/swipl-latest.t
 
 if [ -z "$from" ]; then
     if [ $series == devel ]; then
-	from=$(ls -td [0-9].[13579]* | head -1)
+	from=$(ls -td 1[0-9].[13579]* | head -1)
     else
-	from=$(ls -td [0-9].[02468]* | head -1)
+	from=$(ls -td 1[0-9].[02468]* | head -1)
     fi
 fi
 
