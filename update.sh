@@ -112,19 +112,21 @@ if [ $onlybuild = no ]; then
 fi
 
 dockerfiles=
-for base in bookworm; do
-    if [ $onlybuild = no ]; then
-	sed -i -e "s/SWIPL_VER=$from/SWIPL_VER=$VERSION/" \
-            -e "s/SWIPL_CHECKSUM=[a-f0-9]*/SWIPL_CHECKSUM=$hash/" \
-	    $VERSION/$base/Dockerfile
+for base in bookworm trixie; do
+    if [ -d $VERSION/$base ]; then
+	if [ $onlybuild = no ]; then
+	    sed -i -e "s/SWIPL_VER=$from/SWIPL_VER=$VERSION/" \
+		-e "s/SWIPL_CHECKSUM=[a-f0-9]*/SWIPL_CHECKSUM=$hash/" \
+		$VERSION/$base/Dockerfile
+	fi
+	if [ $build = yes ]; then
+	    docker pull debian:$base
+	    (cd $VERSION/$base && \
+		 docker build -t swipl-$VERSION:$base . 2>&1 | tee build.log)
+	    test swipl-$VERSION:$base || exit 1
+	fi
+	dockerfiles+=" $VERSION/$base/Dockerfile"
     fi
-    if [ $build = yes ]; then
-	docker pull debian:$base
-	(cd $VERSION/$base && \
-	     docker build -t swipl-$VERSION:$base . 2>&1 | tee build.log)
-      test swipl-$VERSION:$base || exit 1
-    fi
-    dockerfiles+=" $VERSION/$base/Dockerfile"
 done
 
 if confirm "Commit $dockerfiles?"; then
